@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribución de Grupos</title>
+	<link rel="icon" href="https://quizizz.com/media/resource/gs/quizizz-media/quizzes/86bf8825-899a-41b8-b9be-0053285a79e1" type="image/x-icon">
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Contenedor principal */
+        .container {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px 40px;
+            margin-top: 40px;
+            width: 80%;
+            max-width: 700px;
+        }
+
+        h1 {
+            font-family: 'Georgia', serif;
+            color: #3a3a3a;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Entrada de cantidad de estudiantes */
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background-color: #5a67d8;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #434aa3;
+        }
+
+        /* Estilo de cada grupo */
+        .group {
+            background: #ffffff;
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            font-size: 16px;
+        }
+
+        /* Colores de cada grupo */
+        .red { background-color: #ffdddd; border-left: 6px solid #ff4c4c; }
+        .black { background-color: #e0e0e0; border-left: 6px solid #333333; }
+        .green { background-color: #ddffdd; border-left: 6px solid #4caf50; }
+        .blue { background-color: #ddefff; border-left: 6px solid #2196f3; }
+        .orange { background-color: #ffefd5; border-left: 6px solid #ffa500; }
+        .lightblue { background-color: #e0f7fa; border-left: 6px solid #00bcd4; }
+        .gray { background-color: #f5f5f5; border-left: 6px solid #9e9e9e; }
+        .white { background-color: #ffffff; border-left: 6px solid #f5f5f5; }
+
+        /* Contenedor de resultados */
+        #groupResults {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Distribución de Grupos - Día del Estudiante</h1>
+
+        <p>Ingrese la cantidad de estudiantes que participarán:</p>
+        <input type="number" id="studentCount" min="1" placeholder="Cantidad de estudiantes">
+        <button onclick="enterNames()">Ingresar Nombres</button>
+
+        <div id="nameInputs"></div>
+        <div id="groupResults"></div>
+    </div>
+
+    <script>
+        let studentNames = [];
+
+        function enterNames() {
+            const studentCount = parseInt(document.getElementById("studentCount").value);
+            if (isNaN(studentCount) || studentCount <= 0) {
+                alert("Por favor, ingrese una cantidad válida de estudiantes.");
+                return;
+            }
+
+            studentNames = []; // Reiniciar la lista de nombres
+            const nameInputsDiv = document.getElementById("nameInputs");
+            nameInputsDiv.innerHTML = "<h2>Ingrese los nombres de los estudiantes:</h2>";
+
+            // Crear campos de entrada para cada nombre de estudiante
+            for (let i = 0; i < studentCount; i++) {
+                const input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = `Nombre del estudiante ${i + 1}`;
+                input.id = `student${i}`;
+                nameInputsDiv.appendChild(input);
+                nameInputsDiv.appendChild(document.createElement("br"));
+            }
+
+            // Botón para asignar los grupos después de ingresar los nombres
+            const button = document.createElement("button");
+            button.textContent = "Asignar Grupos";
+            button.onclick = assignGroups;
+            nameInputsDiv.appendChild(button);
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function assignGroups() {
+            const studentCount = parseInt(document.getElementById("studentCount").value);
+
+            // Obtener todos los nombres de los estudiantes
+            studentNames = [];
+            for (let i = 0; i < studentCount; i++) {
+                const name = document.getElementById(`student${i}`).value.trim();
+                if (name) {
+                    studentNames.push(name);
+                }
+            }
+
+            if (studentNames.length !== studentCount) {
+                alert("Por favor, ingrese todos los nombres de los estudiantes.");
+                return;
+            }
+
+            // Mezclar la lista de nombres para que la asignación sea aleatoria
+            shuffleArray(studentNames);
+
+            const groups = [
+                { name: "Grupo 1: Rojo", color: "red", members: [] },
+                { name: "Grupo 2: Negro", color: "black", members: [] },
+                { name: "Grupo 3: Verde", color: "green", members: [] },
+                { name: "Grupo 4: Azul", color: "blue", members: [] },
+                { name: "Grupo 5: Anaranjado", color: "orange", members: [] },
+                { name: "Grupo 6: Celeste", color: "lightblue", members: [] },
+                { name: "Grupo 7: Plomo", color: "gray", members: [] },
+                { name: "Grupo 8: Blanco", color: "white", members: [] }
+            ];
+
+            const groupCount = groups.length;
+
+            // Distribuir los estudiantes aleatoriamente en los grupos de manera equitativa
+            for (let i = 0; i < studentNames.length; i++) {
+                groups[i % groupCount].members.push(studentNames[i]);
+            }
+
+            // Ocultar la lista de entrada de nombres
+            document.getElementById("nameInputs").style.display = "none";
+
+            // Mostrar resultados
+            let resultsHTML = "<h2>Distribución de Estudiantes:</h2>";
+            groups.forEach(group => {
+                resultsHTML += `<div class="group ${group.color}">
+                                    <strong>${group.name}</strong><br>
+                                    ${group.members.join("<br>")}
+                                </div>`;
+            });
+
+            document.getElementById("groupResults").innerHTML = resultsHTML;
+        }
+    </script>
+
+</body>
+</html>
